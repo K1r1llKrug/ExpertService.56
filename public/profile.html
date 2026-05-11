@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль - Эксперт Сервис</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .profile-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 30px;
+        }
+        .profile-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .profile-header img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            margin-bottom: 15px;
+        }
+        .profile-body {
+            padding: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .btn-save {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        .btn-save:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        .avatar-upload {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .avatar-upload label {
+            display: inline-block;
+            background: rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+        .avatar-upload label:hover {
+            background: rgba(255,255,255,0.5);
+        }
+        .message {
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        .history-section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .history-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+        }
+        .history-header h3 {
+            margin: 0;
+        }
+        .history-body {
+            padding: 20px;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        .tab-btn {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            transition: all 0.3s;
+        }
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .request-item, .review-item {
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+        .request-item:hover, .review-item:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .request-header, .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .request-service {
+            font-weight: bold;
+            color: #333;
+        }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-new { background: #f39c12; color: white; }
+        .status-in_progress { background: #3498db; color: white; }
+        .status-completed { background: #2ecc71; color: white; }
+        .status-cancelled { background: #e74c3c; color: white; }
+        .request-date, .review-date {
+            font-size: 12px;
+            color: #999;
+        }
+        .request-phone, .review-rating {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .review-comment {
+            margin-top: 10px;
+            color: #333;
+        }
+        .master-response {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f0f7ff;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+        @media (max-width: 768px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1><i class="fas fa-tools"></i> Эксперт Сервис</h1>
+                <p>Ремонт бытовой техники в Оренбурге</p>
+            </div>
+            <nav>
+                <a href="/index.html"><i class="fas fa-home"></i> Главная</a>
+                <a href="/services.html"><i class="fas fa-wrench"></i> Услуги</a>
+                <a href="/reviews.html"><i class="fas fa-star"></i> Отзывы</a>
+                <a href="/about.html"><i class="fas fa-info-circle"></i> О нас</a>
+                <a href="/gallery.html"><i class="fas fa-images"></i> Фото</a>
+                <a href="/news.html"><i class="fas fa-newspaper"></i> Новости</a>
+                <a href="/vacancies.html"><i class="fas fa-briefcase"></i> Вакансии</a>
+                <a href="/contacts.html"><i class="fas fa-phone"></i> Контакты</a>
+                <div id="userMenu"></div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="profile-container">
+            <div class="profile-grid">
+                <!-- Левая колонка - редактирование профиля -->
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <img id="avatarPreview" src="/uploads/default-avatar.png" alt="Аватар">
+                        <h2 id="userName">Загрузка...</h2>
+                        <p id="userRole"></p>
+                    </div>
+                    <div class="profile-body">
+                        <div id="message" class="message"></div>
+                        <form id="profileForm" enctype="multipart/form-data">
+                            <div class="avatar-upload">
+                                <input type="file" id="avatar" name="avatar" accept="image/*" style="display:none">
+                                <label for="avatar"><i class="fas fa-camera"></i> Изменить аватар</label>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-user"></i> Имя</label>
+                                <input type="text" id="name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-envelope"></i> Email</label>
+                                <input type="email" id="email" disabled style="background:#f5f5f5">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-lock"></i> Текущий пароль</label>
+                                <input type="password" id="currentPassword" placeholder="Введите текущий пароль для смены">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-key"></i> Новый пароль</label>
+                                <input type="password" id="newPassword" placeholder="Введите новый пароль">
+                            </div>
+                            <button type="submit" class="btn-save"><i class="fas fa-save"></i> Сохранить изменения</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Правая колонка - история заявок и отзывов -->
+                <div class="history-section">
+                    <div class="history-header">
+                        <h3><i class="fas fa-history"></i> Моя активность</h3>
+                    </div>
+                    <div class="history-body">
+                        <div class="tabs">
+                            <button class="tab-btn active" onclick="showTab('requests')"><i class="fas fa-clipboard-list"></i> Мои заявки</button>
+                            <button class="tab-btn" onclick="showTab('reviews')"><i class="fas fa-star"></i> Мои отзывы</button>
+                        </div>
+                        
+                        <div id="requestsTab" class="tab-content active">
+                            <div id="requestsList">
+                                <div class="empty-state">Загрузка заявок...</div>
+                            </div>
+                        </div>
+                        
+                        <div id="reviewsTab" class="tab-content">
+                            <div id="reviewsList">
+                                <div class="empty-state">Загрузка отзывов...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3><i class="fas fa-tools"></i> Эксперт Сервис</h3>
+                <p>Профессиональный ремонт бытовой техники в Оренбурге с 2009 года.</p>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-vk"></i></a>
+                    <a href="#"><i class="fab fa-telegram"></i></a>
+                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h3><i class="fas fa-clock"></i> Режим работы</h3>
+                <ul class="footer-hours">
+                    <li><span>ПН-ПТ:</span> <span>10:00 - 19:00</span></li>
+                    <li><span>СБ:</span> <span>10:00 - 15:00</span></li>
+                    <li><span>ВС:</span> <span>Выходной</span></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3><i class="fas fa-phone-alt"></i> Контакты</h3>
+                <ul class="footer-contacts">
+                    <li><i class="fas fa-phone"></i> <a href="tel:+73532220666">+7 (3532) 22-06-66</a></li>
+                    <li><i class="fas fa-phone"></i> <a href="tel:+73532611138">+7 (3532) 61-11-38</a></li>
+                    <li><i class="fas fa-envelope"></i> <a href="mailto:info@expert-service56.ru">info@expert-service56.ru</a></li>
+                    <li><i class="fas fa-map-marker-alt"></i> г. Оренбург, ул. Советская, 123</li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3><i class="fas fa-link"></i> Быстрые ссылки</h3>
+                <ul class="footer-links">
+                    <li><a href="/index.html"><i class="fas fa-home"></i> Главная</a></li>
+                    <li><a href="/services.html"><i class="fas fa-wrench"></i> Услуги</a></li>
+                    <li><a href="/reviews.html"><i class="fas fa-star"></i> Отзывы</a></li>
+                    <li><a href="/contacts.html"><i class="fas fa-envelope"></i> Контакты</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Эксперт Сервис. Все права защищены.</p>
+            <p class="footer-dev">Разработка и поддержка — Студенческая практика</p>
+        </div>
+    </div>
+</footer>
+
+    <script>
+        // Переключение вкладок
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            if (tabName === 'requests') {
+                document.querySelector('.tab-btn:first-child').classList.add('active');
+                document.getElementById('requestsTab').classList.add('active');
+            } else {
+                document.querySelector('.tab-btn:last-child').classList.add('active');
+                document.getElementById('reviewsTab').classList.add('active');
+            }
+        }
+
+        // Загрузка данных пользователя
+        async function loadUserProfile() {
+            try {
+                const res = await fetch('/api/me');
+                if (res.ok) {
+                    const user = await res.json();
+                    document.getElementById('userName').textContent = user.name;
+                    document.getElementById('name').value = user.name;
+                    document.getElementById('email').value = user.email;
+                    document.getElementById('avatarPreview').src = user.avatar || '/uploads/default-avatar.png';
+                    
+                    const roleText = {
+                        'admin': 'Администратор',
+                        'master': 'Мастер',
+                        'user': 'Клиент'
+                    };
+                    document.getElementById('userRole').textContent = roleText[user.role] || 'Пользователь';
+                } else {
+                    window.location.href = '/login.html';
+                }
+            } catch (err) {
+                console.error('Error loading profile:', err);
+                window.location.href = '/login.html';
+            }
+        }
+
+        // Загрузка заявок пользователя
+        async function loadUserRequests() {
+            try {
+                const res = await fetch('/api/requests');
+                if (res.ok) {
+                    const requests = await res.json();
+                    const container = document.getElementById('requestsList');
+                    
+                    if (requests.length === 0) {
+                        container.innerHTML = '<div class="empty-state"><i class="fas fa-clipboard-list fa-3x" style="margin-bottom:15px;display:block"></i>У вас пока нет заявок.<br><a href="/index.html">Оставить заявку</a></div>';
+                        return;
+                    }
+                    
+                    const statusText = {
+                        'new': 'Новая',
+                        'in_progress': 'В работе',
+                        'completed': 'Выполнена',
+                        'cancelled': 'Отменена'
+                    };
+                    
+                    container.innerHTML = requests.map(req => `
+                        <div class="request-item">
+                            <div class="request-header">
+                                <span class="request-service">${escapeHtml(req.service)}</span>
+                                <span class="status-badge status-${req.status}">${statusText[req.status] || req.status}</span>
+                            </div>
+                            <div class="request-phone"><i class="fas fa-phone"></i> ${escapeHtml(req.phone)}</div>
+                            ${req.description ? `<div class="request-description" style="margin-top:8px;color:#666;font-size:14px"><i class="fas fa-comment"></i> ${escapeHtml(req.description)}</div>` : ''}
+                            <div class="request-date"><i class="fas fa-calendar"></i> ${new Date(req.created_at).toLocaleDateString()} ${new Date(req.created_at).toLocaleTimeString()}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('requestsList').innerHTML = '<div class="empty-state">Ошибка загрузки заявок</div>';
+                }
+            } catch (err) {
+                console.error('Error loading requests:', err);
+                document.getElementById('requestsList').innerHTML = '<div class="empty-state">Ошибка загрузки заявок</div>';
+            }
+        }
+
+        // Загрузка отзывов пользователя
+        async function loadUserReviews() {
+            try {
+                const res = await fetch('/api/reviews');
+                if (res.ok) {
+                    const allReviews = await res.json();
+                    // Фильтруем отзывы текущего пользователя по user_id
+                    const userRes = await fetch('/api/me');
+                    const user = await userRes.json();
+                    const userReviews = allReviews.filter(r => r.user_id === user.id);
+                    
+                    const container = document.getElementById('reviewsList');
+                    
+                    if (userReviews.length === 0) {
+                        container.innerHTML = '<div class="empty-state"><i class="fas fa-star fa-3x" style="margin-bottom:15px;display:block"></i>Вы пока не оставляли отзывы.<br><a href="/reviews.html">Оставить отзыв</a></div>';
+                        return;
+                    }
+                    
+                    container.innerHTML = userReviews.map(review => `
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div class="review-rating">
+                                    ${'★'.repeat(review.rating)}${'☆'.repeat(5-review.rating)}
+                                </div>
+                                <div class="review-date">${new Date(review.created_at).toLocaleDateString()}</div>
+                            </div>
+                            <div class="review-comment">${escapeHtml(review.comment)}</div>
+                            ${review.master_response ? `
+                                <div class="master-response">
+                                    <strong><i class="fas fa-reply"></i> Ответ мастера:</strong><br>
+                                    ${escapeHtml(review.master_response)}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('reviewsList').innerHTML = '<div class="empty-state">Ошибка загрузки отзывов</div>';
+                }
+            } catch (err) {
+                console.error('Error loading reviews:', err);
+                document.getElementById('reviewsList').innerHTML = '<div class="empty-state">Ошибка загрузки отзывов</div>';
+            }
+        }
+
+        // Обновление профиля
+        async function updateProfile(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('name', document.getElementById('name').value);
+            
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            
+            if (currentPassword && newPassword) {
+                formData.append('currentPassword', currentPassword);
+                formData.append('newPassword', newPassword);
+            }
+            
+            const avatarFile = document.getElementById('avatar').files[0];
+            if (avatarFile) {
+                formData.append('avatar', avatarFile);
+            }
+            
+            const messageDiv = document.getElementById('message');
+            
+            try {
+                const res = await fetch('/api/profile', {
+                    method: 'PUT',
+                    body: formData
+                });
+                
+                if (res.ok) {
+                    const updatedUser = await res.json();
+                    messageDiv.className = 'message success';
+                    messageDiv.innerHTML = '<i class="fas fa-check-circle"></i> Профиль успешно обновлён!';
+                    
+                    document.getElementById('userName').textContent = updatedUser.name;
+                    document.getElementById('name').value = updatedUser.name;
+                    document.getElementById('avatarPreview').src = updatedUser.avatar + '?t=' + Date.now();
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                    
+                    setTimeout(() => {
+                        messageDiv.className = 'message';
+                        messageDiv.innerHTML = '';
+                    }, 3000);
+                } else {
+                    const err = await res.json();
+                    messageDiv.className = 'message error';
+                    messageDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка: ' + err.error;
+                }
+            } catch (err) {
+                messageDiv.className = 'message error';
+                messageDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка соединения';
+            }
+        }
+
+        // Проверка авторизации для меню
+        async function checkAuth() {
+            try {
+                const res = await fetch('/api/me');
+                if (res.ok) {
+                    const user = await res.json();
+                    const userMenu = document.getElementById('userMenu');
+                    if (userMenu) {
+                        userMenu.innerHTML = `
+                            <div class="user-menu">
+                                <img src="${user.avatar || '/uploads/default-avatar.png'}" class="avatar-small">
+                                <span>${escapeHtml(user.name)}</span>
+                                <div class="user-dropdown">
+                                    <a href="/profile.html"><i class="fas fa-user"></i> Профиль</a>
+                                    ${user.role === 'admin' ? '<a href="/admin/dashboard"><i class="fas fa-cog"></i> Админ-панель</a>' : ''}
+                                    ${user.role === 'master' ? '<a href="/master/dashboard"><i class="fas fa-tools"></i> Панель мастера</a>' : ''}
+                                    <a href="#" onclick="event.preventDefault(); logout()"><i class="fas fa-sign-out-alt"></i> Выйти</a>
+                                </div>
+                            </div>
+                        `;
+                    }
+                } else {
+                    const userMenu = document.getElementById('userMenu');
+                    if (userMenu) {
+                        userMenu.innerHTML = `<a href="/login.html" class="login-btn"><i class="fas fa-sign-in-alt"></i> Войти</a>`;
+                    }
+                }
+            } catch (err) {
+                console.error('Auth error:', err);
+            }
+        }
+
+        async function logout() {
+            await fetch('/api/logout', { method: 'POST' });
+            window.location.href = '/';
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // Превью аватара
+        document.getElementById('avatar').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('avatarPreview').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserProfile();
+            loadUserRequests();
+            loadUserReviews();
+            checkAuth();
+            document.getElementById('profileForm').addEventListener('submit', updateProfile);
+        });
+    </script>
+</body>
+</html>

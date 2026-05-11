@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель - Эксперт Сервис</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .admin-sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: all 0.3s;
+        }
+
+        .admin-sidebar-header {
+            padding: 25px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .admin-sidebar-header h2 {
+            font-size: 1.3rem;
+            margin-top: 10px;
+        }
+
+        .admin-sidebar-nav {
+            padding: 20px 0;
+        }
+
+        .admin-sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 25px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .admin-sidebar-nav a:hover,
+        .admin-sidebar-nav a.active {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding-left: 30px;
+        }
+
+        .admin-sidebar-nav a i {
+            width: 24px;
+            font-size: 1.2rem;
+        }
+
+        /* Main Content */
+        .admin-main {
+            flex: 1;
+            margin-left: 280px;
+            padding: 20px;
+        }
+
+        .admin-header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .admin-header h1 {
+            font-size: 1.5rem;
+            color: #2c3e50;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        .admin-content {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            overflow-x: auto;
+            display: block;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .data-table tr:hover {
+            background: #f5f5f5;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.85rem;
+            margin: 0 2px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 25px;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 10px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .image-preview {
+            max-width: 200px;
+            max-height: 150px;
+            margin-top: 10px;
+            border-radius: 5px;
+            display: block;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .status-new { background: #f39c12; color: white; }
+        .status-in_progress { background: #3498db; color: white; }
+        .status-completed { background: #2ecc71; color: white; }
+        .status-cancelled { background: #e74c3c; color: white; }
+
+        .add-button {
+            margin: 20px 0;
+            display: inline-block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                width: 70px;
+            }
+            .admin-sidebar-header h2,
+            .admin-sidebar-nav a span {
+                display: none;
+            }
+            .admin-main {
+                margin-left: 70px;
+            }
+            .admin-sidebar-nav a {
+                justify-content: center;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <div class="admin-sidebar-header">
+                <i class="fas fa-tools fa-2x"></i>
+                <h2>Админ-панель</h2>
+            </div>
+            <div class="admin-sidebar-nav">
+                <a onclick="loadSection('dashboard')">
+                    <i class="fas fa-tachometer-alt"></i> <span>Главная</span>
+                </a>
+                <a onclick="loadSection('users')">
+                    <i class="fas fa-users"></i> <span>Пользователи</span>
+                </a>
+                <a onclick="loadSection('services')">
+                    <i class="fas fa-tools"></i> <span>Услуги</span>
+                </a>
+                <a onclick="loadSection('requests')">
+                    <i class="fas fa-clipboard-list"></i> <span>Заявки</span>
+                </a>
+                <a onclick="loadSection('reviews')">
+                    <i class="fas fa-star"></i> <span>Отзывы</span>
+                </a>
+                <a onclick="loadSection('news')">
+                    <i class="fas fa-newspaper"></i> <span>Новости</span>
+                </a>
+                <a onclick="loadSection('vacancies')">
+                    <i class="fas fa-briefcase"></i> <span>Вакансии</span>
+                </a>
+                <a onclick="loadSection('photos')">
+                    <i class="fas fa-images"></i> <span>Фото</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-main">
+            <div class="admin-header">
+                <h1><i class="fas fa-cog"></i> Управление сайтом</h1>
+                <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Выйти</button>
+            </div>
+            <div id="adminContent" class="admin-content">
+                <div style="text-align: center; padding: 50px;">
+                    <i class="fas fa-spinner fa-spin fa-3x"></i>
+                    <p>Загрузка...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSection = 'dashboard';
+
+        // Logout
+        async function logout() {
+            await fetch('/api/logout', { method: 'POST' });
+            window.location.href = '/login.html';
+        }
+
+        // Load section
+        window.loadSection = async function(section) {
+            currentSection = section;
+            document.querySelectorAll('.admin-sidebar-nav a').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.closest('a').classList.add('active');
+            
+            const contentDiv = document.getElementById('adminContent');
+            contentDiv.innerHTML = '<div style="text-align: center; padding: 50px;"><i class="fas fa-spinner fa-spin fa-3x"></i><p>Загрузка...</p></div>';
+            
+            switch(section) {
+                case 'dashboard':
+                    await loadDashboard();
+                    break;
+                case 'users':
+                    await loadUsers();
+                    break;
+                case 'services':
+                    await loadServicesAdmin();
+                    break;
+                case 'requests':
+                    await loadRequestsAdmin();
+                    break;
+                case 'reviews':
+                    await loadReviewsAdmin();
+                    break;
+                case 'news':
+                    await loadNewsAdmin();
+                    break;
+                case 'vacancies':
+                    await loadVacanciesAdmin();
+                    break;
+                case 'photos':
+                    await loadPhotosAdmin();
+                    break;
+            }
+        };
+
+        // Dashboard
+        async function loadDashboard() {
+            try {
+                const [users, requests, reviews, services, news, vacancies, photos] = await Promise.all([
+                    fetch('/api/admin/users').then(r => r.json()),
+                    fetch('/api/requests').then(r => r.json()),
+                    fetch('/api/reviews').then(r => r.json()),
+                    fetch('/api/services').then(r => r.json()),
+                    fetch('/api/news').then(r => r.json()),
+                    fetch('/api/vacancies').then(r => r.json()),
+                    fetch('/api/photos').then(r => r.json())
+                ]);
+                
+                const html = `
+                    <h2><i class="fas fa-chart-line"></i> Статистика сайта</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 30px 0;">
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; text-align: center;">
+                            <i class="fas fa-users fa-3x"></i>
+                            <h3 style="font-size: 2rem; margin: 10px 0;">${users.length}</h3>
+                            <p>Пользователей</p>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); color: white; padding: 20px; border-radius: 10px; text-align: center;">
+                            <i class="fas fa-clipboard-list fa-3x"></i>
+                            <h3 style="font-size: 2rem; margin: 10px 0;">${requests.length}</h3>
+                            <p>Заявок</p>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); color: white; padding: 20px; border-radius: 10px; text-align: center;">
+                            <i class="fas fa-star fa-3x"></i>
+                            <h3 style="font-size: 2rem; margin: 10px 0;">${reviews.length}</h3>
+                            <p>Отзывов</p>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white; padding: 20px; border-radius: 10px; text-align: center;">
+                            <i class="fas fa-tools fa-3x"></i>
+                            <h3 style="font-size: 2rem; margin: 10px 0;">${services.length}</h3>
+                            <p>Услуг</p>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white; padding: 20px; border-radius: 10px; text-align: center;">
+                            <i class="fas fa-newspaper fa-3x"></i>
+                            <h3 style="font-size: 2rem; margin: 10px 0;">${news.length}</h3>
+                            <p>Новостей</p>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%); color: white; padding: 20px; border-radius: 10px; text-align: center;">
+                            <i class="fas fa-images fa-3x"></i>
+                            <h3 style="font-size: 2rem; margin: 10px 0;">${photos.length}</h3>
+                            <p>Фото</p>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('adminContent').innerHTML = html;
+            } catch (err) {
+                document.getElementById('adminContent').innerHTML = '<p>Ошибка загрузки статистики</p>';
+            }
+        }
+
+        // Users Management
+        async function loadUsers() {
+            try {
+                const res = await fetch('/api/admin/users');
+                const users = await res.json();
+                
+                const html = `
+                    <h2><i class="fas fa-users"></i> Управление пользователями</h2>
+                    <button class="btn-primary add-button" onclick="showAddUserModal()"><i class="fas fa-plus"></i> Добавить пользователя</button>
+                    <div style="overflow-x: auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Аватар</th>
+                                    <th>Имя</th>
+                                    <th>Email</th>
+                                    <th>Роль</th>
+                                    <th>Действия</th>
+                                 </tr>
+                            </thead>
+                            <tbody>
+                                ${users.map(u => `
+                                    <tr>
+                                        <td>${u.id}</td>
+                                        <td><img src="${u.avatar}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"></td>
+                                        <td>${escapeHtml(u.name)}</td>
+                                        <td>${escapeHtml(u.email)}</td>
+                                        <td>
+                                            <select onchange="updateUserRole(${u.id}, this.value)">
+                                                <option value="user" ${u.role === 'user' ? 'selected' : ''}>Пользователь</option>
+                                                <option value="master" ${u.role === 'master' ? 'selected' : ''}>Мастер</option>
+                                                <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Администратор</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <button onclick="deleteUser(${u.id})" class="btn-danger btn-sm">Удалить</button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                document.getElementById('adminContent').innerHTML = html;
+            } catch (err) {
+                document.getElementById('adminContent').innerHTML = '<p>Ошибка загрузки пользователей</p>';
+            }
+        }
+
+        window.updateUserRole = async (userId, role) => {
+            try {
+                const res = await fetch(`/api/admin/users/${userId}/role`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ role })
+                });
+                if (res.ok) {
+                    alert('Роль обновлена');
+                    loadUsers();
+                } else alert('Ошибка');
+            } catch (err) {
+                alert('Ошибка');
+            }
+        };
+
+        window.deleteUser = async (userId) => {
+            if (confirm('Удалить пользователя?')) {
+                try {
+                    const res = await fetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
+                    if (res.ok) {
+                        alert('Пользователь удален');
+                        loadUsers();
+                    } else alert('Ошибка');
+                } catch (err) {
+                    alert('Ошибка');
+                }
+            }
+        };
+
+        window.showAddUserModal = function() {
+            const modalHTML = `
+                <div id="addUserModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeModal('addUserModal')">&times;</span>
+                        <h3><i class="fas fa-user-plus"></i> Добавить пользователя</h3>
+                        <form onsubmit="return addUser(event)">
+                            <div class="form-group">
+                                <label>Имя *</label>
+                                <input type="text" id="newUserName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email *</label>
+                                <input type="email" id="newUserEmail" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Пароль *</label>
+                                <input type="password" id="newUserPassword" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Роль</label>
+                                <select id="newUserRole">
+                                    <option value="user">Пользователь</option>
+                                    <option value="master">Мастер</option>
+                                    <option value="admin">Администратор</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn-primary">Добавить</button>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            document.getElementById('addUserModal').style.display = 'block';
+        };
+
+        window.addUser = async function(event) {
+            event.preventDefault();
+            const name = document.getElementById('newUserName').value;
+            const email = document.getElementById('newUserEmail').value;
+            const password = document.getElementById('newUserPassword').value;
+            const role = document.getElementById('newUserRole').value;
+            
+            const res = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, password, role })
+            });
+            
+            if (res.ok) {
+                alert('Пользователь добавлен');
+                closeModal('addUserModal');
+                loadUsers();
+            } else {
+                const err = await res.json();
+                alert('Ошибка: ' + err.error);
+            }
+            return false;
+        };
+
+        // Services Management
+        async function loadServicesAdmin() {
+            try {
+                const res = await fetch('/api/services');
+                const services = await res.json();
+                
+                const html = `
+                    <h2><i class="fas fa-tools"></i> Управление услугами</h2>
+                    <button class="btn-primary add-button" onclick="showAddServiceModal()"><i class="fas fa-plus"></i> Добавить услугу</button>
+                    <div style="overflow-x: auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Изображение</th>
+                                    <th>Название</th>
+                                    <th>Описание</th>
+                                    <th>Цена</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${services.map(s => `
+                                    <tr>
+                                        <td>${s.id}</td>
+                                        <td>${s.image ? `<img src="${s.image}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">` : '—'}</td>
+                                        <td><input type="text" id="name-${s.id}" value="${escapeHtml(s.name)}" style="width: 150px;"></td>
+                                        <td><input type="text" id="desc-${s.id}" value="${escapeHtml(s.description || '')}" style="width: 200px;"></td>
+                                        <td><input type="number" id="price-${s.id}" value="${s.price}" style="width: 80px;"></td>
+                                        <td>
+                                            <button onclick="updateService(${s.id})" class="btn-warning btn-sm">Сохранить</button>
+                                            <button onclick="deleteService(${s.id})" class="btn-danger btn-sm">Удалить</button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                document.getElementById('adminContent').innerHTML = html;
+            } catch (err) {
+                document.getElementById('adminContent').innerHTML = '<p>Ошибка загрузки услуг</p>';
+            }
+        }
+
+        window.updateService = async (id) => {
+            const name = document.getElementById(`name-${id}`).value;
+            const description = document.getElementById(`desc-${id}`).value;
+            const price = document.getElementById(`price-${id}`).value;
+            
+            try {
+                const res = await fetch(`/api/admin/services/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, description, price: parseFloat(price) })
+                });
+                if (res.ok) {
+                    alert('Услуга обновлена');
+                    loadServicesAdmin();
+                } else alert('Ошибка');
+            } catch (err) {
+                alert('Ошибка');
+            }
+        };
+
+        window.deleteService = async (id) => {
+            if (confirm('Удалить услугу?')) {
+                try {
+                    const res = await fetch(`/api/admin/services/${id}`, { method: 'DELETE' });
+                    if (res.ok) {
+                        alert('Услуга удалена');
+                        loadServicesAdmin();
+                    } else alert('Ошибка');
+                } catch (err) {
+                    alert('Ошибка');
+                }
+            }
+        };
+
+        window.showAddServiceModal = function() {
+            const modalHTML = `
+                <div id="addServiceModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeModal('addServiceModal')">&times;</span>
+                        <h3><i class="fas fa-plus"></i> Добавить услугу</h3>
+                        <form onsubmit="return addService(event)" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label>Название *</label>
+                                <input type="text" id="newServiceName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Описание</label>
+                                <textarea id="newServiceDesc" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Цена</label>
+                                <input type="number" id="newServicePrice" step="100">
+                            </div>
+                            <div class="form-group">
+                                <label>Изображение</label>
+                                <input type="file" id="newServiceImage" accept="image/*" onchange="previewImage(this, 'servicePreview')">
+                                <img id="servicePreview" class="image-preview" style="display: none;">
+                            </div>
+                            <button type="submit" class="btn-primary">Добавить</button>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            document.getElementById('addServiceModal').style.display = 'block';
+        };
+
+        window.addService = async function(event) {
+            event.preventDefault();
+            const formData = new FormData();
+            formData.append('name', document.getElementById('newServiceName').value);
+            formData.append('description', document.getElementById('newServiceDesc').value);
+            formData.append('price', document.getElementById('newServicePrice').value);
+            const imageFile = document.getElementById('newServiceImage').files[0];
+            if (imageFile) formData.append('image', imageFile);
+            
+            const res = await fetch('/api/admin/services', {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (res.ok) {
+                alert('Услуга добавлена');
+                closeModal('addServiceModal');
+                loadServicesAdmin();
+            } else {
+                const err = await res.json();
+                alert('Ошибка: ' + err.error);
+            }
+            return false;
+        };
+
+        // Requests Management
+        async function loadRequestsAdmin() {
+            try {
+                const res = await fetch('/api/requests');
+                const requests = await res.json();
+                
+                const html = `
+                    <h2><i class="fas fa-clipboard-list"></i> Управление заявками</h2>
+                    <div style="overflow-x: auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Пользователь</th>
+                                    <th>Имя</th>
+                                    <th>Телефон</th>
+                                    <th>Услуга</th>
+                                    <th>Статус</th>
+                                    <th>Дата</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${requests.map(r => `
+                                    <tr>
+                                        <td>${r.id}</td>
+                                        <td>${escapeHtml(r.user_name || 'Гость')}</td>
+                                        <td>${escapeHtml(r.name)}</td>
+                                        <td>${escapeHtml(r.phone)}</td>
+                                        <td>${escapeHtml(r.service)}</td>
+                                        <td><span class="status-badge status-${r.status}">${getStatusText(r.status)}</span></td>
+                                        <td>${new Date(r.created_at).toLocaleDateString()}</td>
+                                        <td>
+                                            <select onchange="updateRequestStatus(${r.id}, this.value)" class="btn-sm">
+                                                <option value="new" ${r.status === 'new' ? 'selected' : ''}>Новая</option>
+                                                <option value="in_progress" ${r.status === 'in_progress' ? 'selected' : ''}>В работе</option>
+                                                <option value="completed" ${r.status === 'completed' ? 'selected' : ''}>Выполнена</option>
+                                                <option value="cancelled" ${r.status === 'cancelled' ? 'selected' : ''}>Отменена</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                document.getElementById('adminContent').innerHTML = html;
+            } catch (err) {
+                document.getElementById('adminContent').innerHTML = '<p>Ошибка загрузки заявок</p>';
+            }
+        }
+
+        window.updateRequestStatus = async (id, status) => {
+            try {
+                const res = await fetch(`/api/requests/${id}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+                if (res.ok) {
+                    alert('Статус обновлен');
+                    loadRequestsAdmin();
+                } else alert('Ошибка');
+            } catch (err) {
+                alert('Ошибка');
+            }
+        };
+
+        // Reviews Management
+        async function loadReviewsAdmin() {
+            try {
+                const res = await fetch('/api/reviews');
+                const reviews = await res.json();
+                
+                const html = `
+                    <h2><i class="fas fa-star"></i> Управление отзывами</h2>
+                    <div style="overflow-x: auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Пользователь</th>
+                                    <th>Рейтинг</th>
+                                    <th>Отзыв</th>
+                                    <th>Ответ мастера</th>
+                                    <th>Дата</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${reviews.map(r => `
+                                    <tr>
+                                        <td>${r.id}</td>
+                                        <td>${escapeHtml(r.user_name)}</td>
+                                        <td>${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</td>
+                                        <td>${escapeHtml(r.comment)}</td>
+                                        <td>${r.master_response ? escapeHtml(r.master_response) : '—'}</td>
+                                        <td>${new Date(r.created_at).toLocaleDateString()}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                document.getElementById('adminContent').innerHTML = html;
+            } catch (err) {
+                document.getElementById('adminContent').innerHTML = '<p>Ошибка загрузки отзывов</p>';
+            }
+        }
+
+        // News Management
+        async function loadNewsAdmin() {
+            try {
+                const res = await fetch('/api/news');
+                const news = await res.json();
+                
+                const html = `
+                    <h2><i class="fas fa-newspaper"></i> Управление новостями</h2>
+                    <button class="btn-primary add-button" onclick="showAddNewsModal()"><i class="fas fa-plus"></i> Добавить новость</button>
+                    <div style="overflow-x: auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Заголовок</th>
+                                    <th>Содержание</th>
+                                    <th>Дата</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${news.map(n => `
+                                    <tr>
+                                        <td>${n.id}</td>
+                                        <td><input type="text" id="title-${n.id}" value="${escapeHtml(n.title)}" style="width: 200px;"></td>
+                                        <td><textarea id="content-${n.id}" rows="2" style="width: 300px;">${escapeHtml(n.content)}</textarea></td>
+                                        <td>${new Date(n.created_at).toLocaleDateString()}</td>
+                                        <td>
+                                            <button onclick="updateNews(${n.id})" class="btn-warning btn-sm">Сохранить</button>
+                                            <button onclick="deleteNews(${n.id})" class="btn-danger btn-sm">Удалить</button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                document.getElementById('adminContent').innerHTML = html;
+            } catch (err) {
+                document.getElementById('adminContent').innerHTML = '<p>Ошибка загрузки новостей</p>';
+            }
+        }
+
+        window.updateNews = async (id) => {
+            const title = document.getElementById(`title-${id}`).value;
+            const content = document.getElementById(`content-${id}`).value;
+            
+            try {
+                const res = await fetch(`/api/admin/news/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, content })
+                });
+                if (res.ok) {
+                    alert('Новость обновлена');
+                    loadNewsAdmin();
+                } else alert('Ошибка');
+            } catch (err) {
+                alert('Ошибка');
+            }
+        };
+
+        window.deleteNews = async (id) => {
+            if (confirm('Удалить новость?')) {
+                try {
+                    const res = await fetch(`/api/admin/news/${id}`, { method: 'DELETE' });
+                    if (res.ok) {
+                        alert('Новость удалена');
+                        loadNewsAdmin();
+                    } else alert('Ошибка');
+                } catch (err) {
+                    alert('Ошибка');
+                }
+            }
+        };
+
+        window.showAddNewsModal = function() {
+            const modalHTML = `
+                <div id="addNewsModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeModal('addNewsModal')">&times;</span>
+                        <h3><i class="fas fa-plus"></i> Добавить новость</h3>
+                        <form onsubmit="return addNews(event)">
+                            <div class="form-group">
+                                <label>Заголовок *</label>
+                                <input type="text" id="newsTitle" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Содержание *</label>
+                                <textarea id="newsContent" rows="5" required></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary">Добавить</button>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            document.getElementById('addNewsModal').style.display = 'block';
+        };
+
+        window.addNews = async function(event) {
+            event.preventDefault();
+            const title = document.getElementById('newsTitle').value;
+            const content = document.getElementById('newsContent').value;
+            
+            const res = await fetch('/api/admin/news', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, content })
+            });
+            
+            if (res.ok) {
+                alert('Новость добавлена');
+                closeModal('addNewsModal');
+                loadNewsAdmin();
+            } else {
+                const err = await res.json();
+                alert('Ошибка: ' + err.error);
+            }
+            return false;
+        };
+
+        // Vacancies Management
+        async function loadVacanciesAdmin() {
+            try {
+                const res = await fetch('/api/vacancies');
+                const vacancies = await res.json();
+                
+                const html = `
+                    <h2><i class="fas fa-briefcase"></i> Управление вакансиями</h2>
+                    <button class="btn-primary add-button" onclick="showAddVacancyModal()"><i class="fas fa-plus"></i> Добавить вакансию</button>
+                    <div style="overflow-x: auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Название</th>
+                                    <th>Описание</th>
+                                    <th>Требования</th>
+                                    <th>Зарплата</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${vacancies.map(v => `
+                                    <tr>
+                                        <td>${v.id}</td>
+                                        <td><input type="text" id="vac-title-${v.id}" value="${escapeHtml(v.title)}" style="width: 150px;"></td>
+                                        <td><textarea id="vac-desc-${v.id}" rows="2" style="width: 200px;">${escapeHtml(v.description)}</textarea></td>
+                                        <td><textarea id="vac-req-${v.id}" rows="2" style="width: 200px;">${escapeHtml(v.requirements || '')}</textarea></td>
+                                        <td><input type="text" id="vac-salary-${v.id}" value="${escapeHtml(v.salary || '')}" style="width: 100px;"></td>
+                                        <td>
+                                            <button onclick="updateVacancy(${v.id})" class="btn-warning btn-sm">Сохранить</button>
+                                            <button onclick="deleteVacancy(${v.id})" class="btn-danger btn-sm">Удалить</button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                document.getElementById('adminContent').innerHTML = html;
+            } catch (err) {
+                document.getElementById('adminContent').innerHTML = '<p>Ошибка загрузки вакансий</p>';
+            }
+        }
+
+        window.updateVacancy = async (id) => {
+            const title = document.getElementById(`vac-title-${id}`).value;
+            const description = document.getElementById(`vac-desc-${id}`).value;
+            const requirements = document.getElementById(`vac-req-${id}`).value;
+            const salary = document.getElementById(`vac-salary-${id}`).value;
+            
+            try {
+                const res = await fetch(`/api/admin/vacancies/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, description, requirements, salary })
+                });
+                if (res.ok) {
+                    alert('Вакансия обновлена');
+                    loadVacanciesAdmin();
+                } else alert('Ошибка');
+            } catch (err) {
+                alert('Ошибка');
+            }
+        };
+
+        window.deleteVacancy = async (id) => {
+            if (confirm('Удалить вакансию?')) {
+                try {
+                    const res = await fetch(`/api/admin/vacancies/${id}`, { method: 'DELETE' });
+                    if (res.ok) {
+                        alert('Вакансия удалена');
+                        loadVacanciesAdmin();
+                    } else alert('Ошибка');
+                } catch (err) {
+                    alert('Ошибка');
+                }
+            }
+        };
+
+        window.showAddVacancyModal = function() {
+            const modalHTML = `
+                <div id="addVacancyModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeModal('addVacancyModal')">&times;</span>
+                        <h3><i class="fas fa-plus"></i> Добавить вакансию</h3>
+                        <form onsubmit="return addVacancy(event)">
+                            <div class="form-group">
+                                <label>Название *</label>
+                                <input type="text" id="vacancyTitle" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Описание *</label>
+                                <textarea id="vacancyDesc" rows="3" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Требования</label>
+                                <textarea id="vacancyRequirements" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Зарплата</label>
+                                <input type="text" id="vacancySalary" placeholder="договорная">
+                            </div>
+                            <button type="submit" class="btn-primary">Добавить</button>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            document.getElementById('addVacancyModal').style.display = 'block';
+        };
+
+        window.addVacancy = async function(event) {
+            event.preventDefault();
+            const title = document.getElementById('vacancyTitle').value;
+            const description = document.getElementById('vacancyDesc').value;
+            const requirements = document.getElementById('vacancyRequirements').value;
+            const salary = document.getElementById('vacancySalary').value;
+            
+            const res = await fetch('/api/admin/vacancies', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, description, requirements, salary })
+            });
+            
+            if (res.ok) {
+                alert('Вакансия добавлена');
+                closeModal('addVacancyModal');
+                loadVacanciesAdmin();
+            } else {
+                const err = await res.json();
+                alert('Ошибка: ' + err.error);
+            }
+            return false;
+        };
+
+        // Photos Management with description
+        async function loadPhotosAdmin() {
+            try {
+                const res = await fetch('/api/photos');
+                const photos = await res.json();
+                
+                const html = `
+                    <h2><i class="fas fa-images"></i> Управление фото</h2>
+                    <button class="btn-primary add-button" onclick="showAddPhotoModal()"><i class="fas fa-plus"></i> Добавить фото</button>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
+                        ${photos.map(p => `
+                            <div style="border: 1px solid #ddd; border-radius: 8px; padding: 10px; text-align: center; background: white;">
+                                <img src="${p.image}" style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
+                                <div class="form-group" style="margin-top: 10px;">
+                                    <input type="text" id="photo-title-${p.id}" value="${escapeHtml(p.title || '')}" placeholder="Название" style="width: 100%; margin-bottom: 5px;">
+                                    <button onclick="updatePhotoTitle(${p.id})" class="btn-warning btn-sm">Сохранить</button>
+                                    <button onclick="deletePhoto(${p.id})" class="btn-danger btn-sm">Удалить</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                document.getElementById('adminContent').innerHTML = html;
+            } catch (err) {
+                document.getElementById('adminContent').innerHTML = '<p>Ошибка загрузки фото</p>';
+            }
+        }
+
+        window.updatePhotoTitle = async (id) => {
+            const title = document.getElementById(`photo-title-${id}`).value;
+            
+            try {
+                const res = await fetch(`/api/admin/photos/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title })
+                });
+                if (res.ok) {
+                    alert('Название фото обновлено');
+                } else alert('Ошибка');
+            } catch (err) {
+                alert('Ошибка');
+            }
+        };
+
+        window.deletePhoto = async (id) => {
+            if (confirm('Удалить фото?')) {
+                try {
+                    const res = await fetch(`/api/admin/photos/${id}`, { method: 'DELETE' });
+                    if (res.ok) {
+                        alert('Фото удалено');
+                        loadPhotosAdmin();
+                    } else alert('Ошибка');
+                } catch (err) {
+                    alert('Ошибка');
+                }
+            }
+        };
+
+        window.showAddPhotoModal = function() {
+            const modalHTML = `
+                <div id="addPhotoModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeModal('addPhotoModal')">&times;</span>
+                        <h3><i class="fas fa-plus"></i> Добавить фото</h3>
+                        <form onsubmit="return addPhoto(event)" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label>Название фото</label>
+                                <input type="text" id="photoTitle" placeholder="Например: Ремонт холодильника">
+                            </div>
+                            <div class="form-group">
+                                <label>Изображение *</label>
+                                <input type="file" id="photoImage" accept="image/*" required onchange="previewImage(this, 'photoPreview')">
+                                <img id="photoPreview" class="image-preview" style="display: none;">
+                            </div>
+                            <button type="submit" class="btn-primary">Добавить</button>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            document.getElementById('addPhotoModal').style.display = 'block';
+        };
+
+        window.addPhoto = async function(event) {
+            event.preventDefault();
+            const formData = new FormData();
+            formData.append('title', document.getElementById('photoTitle').value);
+            formData.append('image', document.getElementById('photoImage').files[0]);
+            
+            const res = await fetch('/api/admin/photos', {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (res.ok) {
+                alert('Фото добавлено');
+                closeModal('addPhotoModal');
+                loadPhotosAdmin();
+            } else {
+                const err = await res.json();
+                alert('Ошибка: ' + err.error);
+            }
+            return false;
+        };
+
+        // Helper functions
+        window.previewImage = function(input, previewId) {
+            const preview = document.getElementById(previewId);
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        };
+
+        window.closeModal = function(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.remove();
+        };
+
+        function getStatusText(status) {
+            const texts = { new: 'Новая', in_progress: 'В работе', completed: 'Выполнена', cancelled: 'Отменена' };
+            return texts[status] || status;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // Initial load
+        loadSection('dashboard');
+    </script>
+</body>
+</html>

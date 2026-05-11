@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Данные AI - Эксперт Сервис</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .data-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        .chat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .user-msg {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 5px 0;
+        }
+        .bot-msg {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 5px 0;
+        }
+        .export-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .filter {
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="data-container">
+        <h1>📊 Данные для обучения AI</h1>
+        <p>Собранные диалоги с AI-помощником (только для администратора)</p>
+        
+        <div class="filter">
+            <label>Фильтр по интенту: </label>
+            <select id="intentFilter">
+                <option value="all">Все</option>
+                <option value="price">Цены</option>
+                <option value="guarantee">Гарантия</option>
+                <option value="contact">Контакты</option>
+                <option value="address">Адрес</option>
+                <option value="general">Общие</option>
+            </select>
+            <button class="export-btn" onclick="exportData()">📥 Экспорт в JSON</button>
+        </div>
+        
+        <div id="logsContainer">Загрузка...</div>
+    </div>
+    
+    <script>
+        async function loadLogs() {
+            try {
+                const res = await fetch('/api/chat/logs');
+                const logs = await res.json();
+                
+                const filter = document.getElementById('intentFilter').value;
+                let filtered = logs;
+                if (filter !== 'all') {
+                    filtered = logs.filter(l => l.intent === filter);
+                }
+                
+                const container = document.getElementById('logsContainer');
+                if (filtered.length === 0) {
+                    container.innerHTML = '<p>Нет данных</p>';
+                    return;
+                }
+                
+                container.innerHTML = filtered.map(log => `
+                    <div class="chat-card">
+                        <div><strong>👤 ${escapeHtml(log.user_name || 'Гость')}</strong> (${log.email || 'email не указан'})</div>
+                        <div class="user-msg"><strong>❓ Вопрос:</strong> ${escapeHtml(log.user_message)}</div>
+                        <div class="bot-msg"><strong>🤖 Ответ AI:</strong> ${escapeHtml(log.bot_response)}</div>
+                        <div><strong>📅 Дата:</strong> ${new Date(log.created_at).toLocaleString()}</div>
+                        <div><strong>🏷 Интент:</strong> ${log.intent || 'general'}</div>
+                    </div>
+                `).join('');
+            } catch(e) {
+                document.getElementById('logsContainer').innerHTML = '<p>Ошибка загрузки</p>';
+            }
+        }
+        
+        async function exportData() {
+            try {
+                const res = await fetch('/api/chat/export');
+                const data = await res.json();
+                const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `ai_training_data_${new Date().toISOString().slice(0,19)}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            } catch(e) {
+                alert('Ошибка экспорта');
+            }
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        document.getElementById('intentFilter').addEventListener('change', loadLogs);
+        loadLogs();
+    </script>
+</body>
+</html>

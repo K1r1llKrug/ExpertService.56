@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отзывы - Эксперт Сервис</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Стили для слайдера отзывов */
+        .reviews-slider-container {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            padding: 20px 0;
+        }
+        
+        .reviews-slider {
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+        }
+        
+        .reviews-slider-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        
+        .review-slide {
+            min-width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .review-card-slide {
+            background: linear-gradient(135deg, #1a1a1a 0%, #1f1f1f 100%);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 1px solid rgba(220,20,60,0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .review-card-slide:hover {
+            transform: translateY(-5px);
+            border-color: #dc143c;
+            box-shadow: 0 15px 40px rgba(220,20,60,0.2);
+        }
+        
+        .review-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #dc143c, #8b0000);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 36px;
+            color: white;
+        }
+        
+        .review-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 10px;
+        }
+        
+        .review-rating {
+            margin-bottom: 15px;
+        }
+        
+        .review-rating i {
+            color: #dc143c;
+            font-size: 1.2rem;
+            margin: 0 2px;
+        }
+        
+        .review-text {
+            color: #ccc;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-style: italic;
+            font-size: 1rem;
+        }
+        
+        .review-date {
+            color: #777;
+            font-size: 0.85rem;
+        }
+        
+        .master-response-slide {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(220,20,60,0.1);
+            border-radius: 10px;
+            border-left: 3px solid #dc143c;
+            text-align: left;
+        }
+        
+        .master-response-slide strong {
+            color: #dc143c;
+        }
+        
+        .master-response-slide p {
+            color: #aaa;
+            margin-top: 8px;
+        }
+        
+        /* Кнопки слайдера */
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 45px;
+            height: 45px;
+            background: #dc143c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .slider-btn:hover {
+            background: #8b0000;
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .slider-btn.prev {
+            left: -60px;
+        }
+        
+        .slider-btn.next {
+            right: -60px;
+        }
+        
+        .slider-btn i {
+            color: white;
+            font-size: 20px;
+        }
+        
+        /* Индикаторы (точки) */
+        .slider-dots {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 30px;
+        }
+        
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #2a2a2a;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .dot.active {
+            background: #dc143c;
+            width: 30px;
+            border-radius: 10px;
+        }
+        
+        .dot:hover {
+            background: #dc143c;
+        }
+        
+        /* Форма добавления отзыва */
+        .add-review-section {
+            max-width: 600px;
+            margin: 60px auto 0;
+            background: #1a1a1a;
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(220,20,60,0.3);
+        }
+        
+        .add-review-section h3 {
+            color: white;
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .add-review-section h3:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+            background: #dc143c;
+        }
+        
+        .rating-input {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .rating-input input {
+            display: none;
+        }
+        
+        .rating-input label {
+            font-size: 30px;
+            color: #2a2a2a;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .rating-input input:checked ~ label,
+        .rating-input label:hover,
+        .rating-input label:hover ~ label {
+            color: #dc143c;
+        }
+        
+        @media (max-width: 768px) {
+            .slider-btn.prev {
+                left: -10px;
+            }
+            .slider-btn.next {
+                right: -10px;
+            }
+            .slider-btn {
+                width: 35px;
+                height: 35px;
+            }
+            .slider-btn i {
+                font-size: 16px;
+            }
+            .review-card-slide {
+                padding: 20px;
+            }
+            .review-text {
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .slider-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1><i class="fas fa-tools"></i> Эксперт Сервис</h1>
+                <p>Ремонт бытовой техники в Оренбурге</p>
+            </div>
+            <nav>
+                <a href="/index.html"><i class="fas fa-home"></i> Главная</a>
+                <a href="/services.html"><i class="fas fa-wrench"></i> Услуги</a>
+                <a href="/reviews.html"><i class="fas fa-star"></i> Отзывы</a>
+                <a href="/about.html"><i class="fas fa-info-circle"></i> О нас</a>
+                <a href="/gallery.html"><i class="fas fa-images"></i> Фото</a>
+                <a href="/news.html"><i class="fas fa-newspaper"></i> Новости</a>
+                <a href="/vacancies.html"><i class="fas fa-briefcase"></i> Вакансии</a>
+                <a href="/contacts.html"><i class="fas fa-phone"></i> Контакты</a>
+                <div id="userMenu"></div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="page-header">
+            <div class="container">
+                <h1><i class="fas fa-star"></i> Отзывы наших клиентов</h1>
+                <p>Более 500 довольных клиентов рекомендуют нас</p>
+            </div>
+        </div>
+
+        <section class="reviews-slider">
+            <div class="container">
+                <div class="reviews-slider-container">
+                    <div class="slider-btn prev" onclick="prevSlide()">
+                        <i class="fas fa-chevron-left"></i>
+                    </div>
+                    <div class="slider-btn next" onclick="nextSlide()">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    
+                    <div class="reviews-slider">
+                        <div class="reviews-slider-track" id="reviewsSliderTrack">
+                            <!-- Отзывы будут загружены сюда -->
+                            <div class="review-slide">
+                                <div class="review-card-slide">
+                                    <div class="review-avatar">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="review-name">Загрузка...</div>
+                                    <div class="review-rating">★★★★★</div>
+                                    <div class="review-text">Загрузка отзывов...</div>
+                                    <div class="review-date"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slider-dots" id="sliderDots">
+                        <!-- Точки будут созданы динамически -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="add-review-section" id="reviewFormContainer">
+            <h3><i class="fas fa-pen-alt"></i> Оставить отзыв</h3>
+            <form id="reviewForm">
+                <div class="rating-input">
+                    <input type="radio" name="rating" value="5" id="star5"><label for="star5"><i class="fas fa-star"></i></label>
+                    <input type="radio" name="rating" value="4" id="star4"><label for="star4"><i class="fas fa-star"></i></label>
+                    <input type="radio" name="rating" value="3" id="star3"><label for="star3"><i class="fas fa-star"></i></label>
+                    <input type="radio" name="rating" value="2" id="star2"><label for="star2"><i class="fas fa-star"></i></label>
+                    <input type="radio" name="rating" value="1" id="star1"><label for="star1"><i class="fas fa-star"></i></label>
+                </div>
+                <div class="form-group">
+                    <textarea id="reviewComment" rows="4" placeholder="Расскажите о вашем опыте..." required></textarea>
+                </div>
+                <button type="submit" class="btn-primary"><i class="fas fa-paper-plane"></i> Отправить отзыв</button>
+            </form>
+            <div id="reviewMessage" class="error" style="display:none; margin-top:15px;"></div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3><i class="fas fa-tools"></i> Эксперт Сервис</h3>
+                    <p>Профессиональный ремонт бытовой техники в Оренбурге с 2009 года.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-vk"></i></a>
+                        <a href="#"><i class="fab fa-telegram"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h3><i class="fas fa-clock"></i> Режим работы</h3>
+                    <ul class="footer-hours">
+                        <li><span>ПН-ПТ:</span> <span>10:00 - 19:00</span></li>
+                        <li><span>СБ:</span> <span>10:00 - 15:00</span></li>
+                        <li><span>ВС:</span> <span>Выходной</span></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3><i class="fas fa-phone-alt"></i> Контакты</h3>
+                    <ul class="footer-contacts">
+                        <li><i class="fas fa-phone"></i> <a href="tel:+73532220666">+7 (3532) 22-06-66</a></li>
+                        <li><i class="fas fa-phone"></i> <a href="tel:+73532611138">+7 (3532) 61-11-38</a></li>
+                        <li><i class="fas fa-envelope"></i> <a href="mailto:info@expert-service56.ru">info@expert-service56.ru</a></li>
+                        <li><i class="fas fa-map-marker-alt"></i> г. Оренбург, ул. Советская, 123</li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3><i class="fas fa-link"></i> Быстрые ссылки</h3>
+                    <ul class="footer-links">
+                        <li><a href="/index.html"><i class="fas fa-home"></i> Главная</a></li>
+                        <li><a href="/services.html"><i class="fas fa-wrench"></i> Услуги</a></li>
+                        <li><a href="/reviews.html"><i class="fas fa-star"></i> Отзывы</a></li>
+                        <li><a href="/contacts.html"><i class="fas fa-envelope"></i> Контакты</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Эксперт Сервис. Все права защищены.</p>
+                <p class="footer-dev">Разработка и поддержка — Студенческая практика</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/script.js"></script>
+    <script>
+        let currentSlide = 0;
+        let reviews = [];
+        let slideInterval;
+        
+        // Загрузка отзывов
+        async function loadReviewsSlider() {
+            try {
+                const res = await fetch('/api/reviews');
+                if (res.ok) {
+                    reviews = await res.json();
+                    renderSlider();
+                    startAutoSlider();
+                } else {
+                    document.getElementById('reviewsSliderTrack').innerHTML = '<div class="review-slide"><div class="review-card-slide"><div class="review-text">Нет отзывов. Будьте первым!</div></div></div>';
+                }
+            } catch (err) {
+                console.error('Error loading reviews:', err);
+            }
+        }
+        
+        function renderSlider() {
+            const track = document.getElementById('reviewsSliderTrack');
+            const dotsContainer = document.getElementById('sliderDots');
+            
+            if (!reviews.length) {
+                track.innerHTML = '<div class="review-slide"><div class="review-card-slide"><div class="review-text">Пока нет отзывов. Оставьте свой!</div></div></div>';
+                dotsContainer.innerHTML = '';
+                return;
+            }
+            
+            // Рендер слайдов
+            track.innerHTML = reviews.map(review => `
+                <div class="review-slide">
+                    <div class="review-card-slide">
+                        <div class="review-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="review-name">${escapeHtml(review.user_name)}</div>
+                        <div class="review-rating">
+                            ${getStarRating(review.rating)}
+                        </div>
+                        <div class="review-text">
+                            <i class="fas fa-quote-left" style="color:#dc143c; margin-right:10px;"></i>
+                            ${escapeHtml(review.comment)}
+                        </div>
+                        <div class="review-date">${new Date(review.created_at).toLocaleDateString('ru-RU')}</div>
+                        ${review.master_response ? `
+                            <div class="master-response-slide">
+                                <strong><i class="fas fa-reply"></i> Ответ мастера:</strong>
+                                <p>${escapeHtml(review.master_response)}</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+            
+            // Рендер точек
+            dotsContainer.innerHTML = reviews.map((_, index) => `
+                <div class="dot ${index === currentSlide ? 'active' : ''}" onclick="goToSlide(${index})"></div>
+            `).join('');
+        }
+        
+        function getStarRating(rating) {
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= rating) {
+                    stars += '<i class="fas fa-star"></i>';
+                } else {
+                    stars += '<i class="far fa-star"></i>';
+                }
+            }
+            return stars;
+        }
+        
+        function goToSlide(index) {
+            if (index < 0) index = 0;
+            if (index >= reviews.length) index = reviews.length - 1;
+            currentSlide = index;
+            
+            const track = document.getElementById('reviewsSliderTrack');
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+            
+            // Обновляем активную точку
+            document.querySelectorAll('.dot').forEach((dot, i) => {
+                if (i === currentSlide) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+        
+        function nextSlide() {
+            if (reviews.length === 0) return;
+            if (currentSlide + 1 >= reviews.length) {
+                goToSlide(0);
+            } else {
+                goToSlide(currentSlide + 1);
+            }
+            resetAutoSlider();
+        }
+        
+        function prevSlide() {
+            if (reviews.length === 0) return;
+            if (currentSlide - 1 < 0) {
+                goToSlide(reviews.length - 1);
+            } else {
+                goToSlide(currentSlide - 1);
+            }
+            resetAutoSlider();
+        }
+        
+        function startAutoSlider() {
+            if (slideInterval) clearInterval(slideInterval);
+            if (reviews.length > 1) {
+                slideInterval = setInterval(() => {
+                    nextSlide();
+                }, 5000);
+            }
+        }
+        
+        function resetAutoSlider() {
+            if (slideInterval) {
+                clearInterval(slideInterval);
+                startAutoSlider();
+            }
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        // Отправка отзыва
+        const reviewForm = document.getElementById('reviewForm');
+        if (reviewForm) {
+            reviewForm.onsubmit = async (e) => {
+                e.preventDefault();
+                const rating = document.querySelector('input[name="rating"]:checked');
+                const comment = document.getElementById('reviewComment').value;
+                
+                if (!comment) {
+                    showMessage('Пожалуйста, напишите отзыв', 'error');
+                    return;
+                }
+                
+                try {
+                    const res = await fetch('/api/reviews', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ rating: rating ? parseInt(rating.value) : 5, comment })
+                    });
+                    
+                    if (res.ok) {
+                        showMessage('Спасибо за отзыв! Страница обновится...', 'success');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
+                    } else {
+                        const err = await res.json();
+                        showMessage('Ошибка: ' + err.error, 'error');
+                    }
+                } catch (err) {
+                    showMessage('Ошибка отправки отзыва', 'error');
+                }
+            };
+        }
+        
+        function showMessage(msg, type) {
+            const msgDiv = document.getElementById('reviewMessage');
+            msgDiv.textContent = msg;
+            msgDiv.style.display = 'block';
+            msgDiv.style.color = type === 'success' ? '#2ecc71' : '#dc143c';
+            setTimeout(() => {
+                msgDiv.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', () => {
+            loadReviewsSlider();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход - Эксперт Сервис</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <h2><i class="fas fa-sign-in-alt"></i> Вход в систему</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Email</label>
+                    <input type="email" id="email" placeholder="Ведите почту" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Пароль</label>
+                    <input type="password" id="password" placeholder="Введите пароль" required>
+                </div>
+                <button type="submit" class="btn-primary">Войти</button>
+            </form>
+            <p class="text-center" style="margin-top: 20px;">
+                Нет аккаунта? <a href="#" onclick="showRegister()">Зарегистрироваться</a>
+            </p>
+            <div id="errorMsg" class="error"></div>
+        </div>
+
+        <div id="registerForm" style="display:none;" class="auth-card">
+            <h2><i class="fas fa-user-plus"></i> Регистрация</h2>
+            <form id="regForm">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Имя</label>
+                    <input type="text" id="regName" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Email</label>
+                    <input type="email" id="regEmail" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Пароль</label>
+                    <input type="password" id="regPassword" required>
+                </div>
+                <button type="submit" class="btn-primary">Зарегистрироваться</button>
+            </form>
+            <p class="text-center" style="margin-top: 20px;">
+                Уже есть аккаунт? <a href="#" onclick="showLogin()">Войти</a>
+            </p>
+            <div id="regErrorMsg" class="error"></div>
+        </div>
+    </div>
+
+    <script>
+        function showRegister() {
+            document.querySelector('.auth-card').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+        }
+
+        function showLogin() {
+            document.getElementById('registerForm').style.display = 'none';
+            document.querySelector('.auth-card').style.display = 'block';
+        }
+
+        // Login form handler
+        document.getElementById('loginForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            console.log('Attempting login with:', email, password);
+            
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await res.json();
+                console.log('Login response:', data);
+                
+                if (res.ok) {
+                    alert('Вход выполнен успешно!');
+                    if (data.role === 'admin') {
+                        window.location.href = '/admin/dashboard';
+                    } else if (data.role === 'master') {
+                        window.location.href = '/master/dashboard';
+                    } else {
+                        window.location.href = '/';
+                    }
+                } else {
+                    document.getElementById('errorMsg').textContent = data.error || 'Ошибка входа';
+                }
+            } catch (err) {
+                console.error('Login error:', err);
+                document.getElementById('errorMsg').textContent = 'Ошибка соединения с сервером';
+            }
+        };
+
+        // Register form handler
+        document.getElementById('regForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password, role: 'user' })
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok) {
+                    alert('Регистрация успешна! Теперь войдите.');
+                    showLogin();
+                } else {
+                    document.getElementById('regErrorMsg').textContent = data.error || 'Ошибка регистрации';
+                }
+            } catch (err) {
+                document.getElementById('regErrorMsg').textContent = 'Ошибка соединения с сервером';
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Эксперт Сервис - Ремонт бытовой техники в Оренбурге</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1><i class="fas fa-tools"></i> Эксперт Сервис</h1>
+                <p>Ремонт бытовой техники в Оренбурге</p>
+            </div>
+            <nav>
+                <a href="/index.html"><i class="fas fa-home"></i> Главная</a>
+                <a href="/services.html"><i class="fas fa-wrench"></i> Услуги</a>
+                <a href="/reviews.html"><i class="fas fa-star"></i> Отзывы</a>
+                <a href="/about.html"><i class="fas fa-info-circle"></i> О нас</a>
+                <a href="/gallery.html"><i class="fas fa-images"></i> Фото</a>
+                <a href="/news.html"><i class="fas fa-newspaper"></i> Новости</a>
+                <a href="/vacancies.html"><i class="fas fa-briefcase"></i> Вакансии</a>
+                <a href="/contacts.html"><i class="fas fa-phone"></i> Контакты</a>
+                <div id="userMenu"></div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Профессиональный ремонт бытовой техники</h1>
+                <p>Быстро, качественно, с гарантией до 1 года</p>
+                <button onclick="openRequestModal()" class="btn-primary"><i class="fas fa-calendar-alt"></i> Оставить заявку</button>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="container">
+                <div class="features-grid">
+                    <div class="feature">
+                        <i class="fas fa-clock fa-3x"></i>
+                        <h3>Быстрый выезд</h3>
+                        <p>Приедем в день обращения</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-certificate fa-3x"></i>
+                        <h3>Гарантия качества</h3>
+                        <p>До 1 года на все работы</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-ruble-sign fa-3x"></i>
+                        <h3>Доступные цены</h3>
+                        <p>Фиксированная стоимость</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-home fa-3x"></i>
+                        <h3>Ремонт на дому</h3>
+                        <p>Выезжаем по всему городу</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="services">
+            <div class="container">
+                <h2>Популярные услуги</h2>
+                <div id="popularServices" class="services-grid"></div>
+            </div>
+        </section>
+
+        <section class="stats">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat">
+                        <div class="stat-number">5000+</div>
+                        <div class="stat-label">Выполненных ремонтов</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">98%</div>
+                        <div class="stat-label">Довольных клиентов</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">15</div>
+                        <div class="stat-label">Лет на рынке</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">Прием заявок</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="reviews">
+            <div class="container">
+                <h2>Отзывы наших клиентов</h2>
+                <div id="reviewsList" class="reviews-grid"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3><i class="fas fa-tools"></i> Эксперт Сервис</h3>
+                    <p>Профессиональный ремонт бытовой техники в Оренбурге с 2009 года.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-vk"></i></a>
+                        <a href="#"><i class="fab fa-telegram"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h3><i class="fas fa-clock"></i> Режим работы</h3>
+                    <ul class="footer-hours">
+                        <li><span>ПН-ПТ:</span> <span>10:00 - 19:00</span></li>
+                        <li><span>СБ:</span> <span>10:00 - 15:00</span></li>
+                        <li><span>ВС:</span> <span>Выходной</span></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3><i class="fas fa-phone-alt"></i> Контакты</h3>
+                    <ul class="footer-contacts">
+                        <li><i class="fas fa-phone"></i> <a href="tel:+73532220666">+7 (3532) 22-06-66</a></li>
+                        <li><i class="fas fa-phone"></i> <a href="tel:+73532611138">+7 (3532) 61-11-38</a></li>
+                        <li><i class="fas fa-envelope"></i> <a href="mailto:info@expert-service56.ru">info@expert-service56.ru</a></li>
+                        <li><i class="fas fa-map-marker-alt"></i> г. Оренбург, ул. Советская, 123</li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3><i class="fas fa-link"></i> Быстрые ссылки</h3>
+                    <ul class="footer-links">
+                        <li><a href="/index.html"><i class="fas fa-home"></i> Главная</a></li>
+                        <li><a href="/services.html"><i class="fas fa-wrench"></i> Услуги</a></li>
+                        <li><a href="/reviews.html"><i class="fas fa-star"></i> Отзывы</a></li>
+                        <li><a href="/contacts.html"><i class="fas fa-envelope"></i> Контакты</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Эксперт Сервис. Все права защищены.</p>
+                <p class="footer-dev">Разработка и поддержка — Студенческая практика</p>
+            </div>
+        </div>
+    </footer>
+
+    <div id="requestModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2><i class="fas fa-clipboard-list"></i> Оставить заявку</h2>
+            <form id="requestForm">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Ваше имя *</label>
+                    <input type="text" id="reqName" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-phone"></i> Телефон *</label>
+                    <input type="tel" id="reqPhone" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-tools"></i> Услуга *</label>
+                    <select id="reqService" required></select>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-map-marker-alt"></i> Адрес</label>
+                    <input type="text" id="reqAddress" placeholder="ул. Примерная, д. 1">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-calendar"></i> Удобная дата</label>
+                    <input type="date" id="reqDate">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-comment"></i> Описание проблемы</label>
+                    <textarea id="reqDesc" rows="3" placeholder="Опишите проблему..."></textarea>
+                </div>
+                <button type="submit" class="btn-primary">Отправить заявку</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/script.js"></script>
+</body>
+</html>
